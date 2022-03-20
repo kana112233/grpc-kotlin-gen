@@ -33,7 +33,7 @@ abstract class {{serviceName}}ImplBase(
     {{^isManyInput}}
     {{^isManyOutput}}
     {{! == unary req, unary resp == }}
-    open suspend fun {{methodName}}(request: {{inputType}}): {{outputType}} {
+    open suspend fun {{methodName}}(request: {{inputType}}, responseObserver: StreamObserver<{{outputType}}>): Unit {
         throw unimplemented(get{{methodNamePascalCase}}Method()).asRuntimeException()
     }
 
@@ -42,10 +42,7 @@ abstract class {{serviceName}}ImplBase(
         responseObserver: StreamObserver<{{outputType}}>
     ) {
         launch {
-            tryCatchingStatus(responseObserver) {
-                val response = {{methodName}}(request)
-                onNext(response)
-            }
+             {{methodName}}(request, responseObserver)
         }
     }
     {{/isManyOutput}}

@@ -23,6 +23,7 @@ package io.rouz.grpc.examples.chat
 import com.google.protobuf.Empty
 import com.google.protobuf.Timestamp
 import io.grpc.Status
+import io.grpc.stub.StreamObserver
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
@@ -36,10 +37,15 @@ import java.util.concurrent.ConcurrentSkipListMap
 class ChatService : ChatServiceImplBase() {
     private val clientChannels = ConcurrentSkipListMap<String, SendChannel<ChatMessageFromService>>()
 
-    override suspend fun getNames(request: Empty): ChatRoom {
-        return ChatRoom.newBuilder()
-                .addAllNames(clientChannels.keys)
-                .build()
+//    override suspend fun getNames(request: Empty): ChatRoom {
+//        return ChatRoom.newBuilder()
+//                .addAllNames(clientChannels.keys)
+//                .build()
+//    }
+
+    override suspend fun getNames(request: Empty, responseObserver: StreamObserver<ChatRoom>) {
+//        responseObserver.onNext()
+        responseObserver.onCompleted()
     }
 
     private fun createChannel() = Channel<ChatMessageFromService>(100).apply {
@@ -110,9 +116,9 @@ class ChatService : ChatServiceImplBase() {
         }
     }
 
-    override suspend fun say(request: ChatMessage): Empty = Empty.getDefaultInstance().also {
-        broadcast(request)
-    }
+//    override suspend fun say(request: ChatMessage): Empty = Empty.getDefaultInstance().also {
+//        broadcast(request)
+//    }
 
     override fun listen(request: WhoAmI): ReceiveChannel<ChatMessageFromService> = createChannel().also {
         subscribe(request.name, it)
