@@ -101,20 +101,17 @@ object {{className}} {
         {{^isManyInput}}
         {{^isManyOutput}}
         {{! == unary req, unary resp == }}
-        open suspend fun {{methodName}}(request: {{inputType}}): {{outputType}} {
-            throw unimplemented(get{{methodNamePascalCase}}Method()).asRuntimeException()
-        }
+        open suspend fun {{methodName}}(request: {{inputType}}, responseObserver: StreamObserver<{{outputType}}>): Unit {
+           throw unimplemented(get{{methodNamePascalCase}}Method()).asRuntimeException()
+       }
 
         internal fun {{methodName}}Internal(
             request: {{inputType}},
             responseObserver: StreamObserver<{{outputType}}>
         ) {
-            launch {
-                tryCatchingStatus(responseObserver) {
-                    val response = {{methodName}}(request)
-                    onNext(response)
-                }
-            }
+           launch {
+                {{methodName}}(request, responseObserver)
+           }
         }
         {{/isManyOutput}}
         {{#isManyOutput}}
